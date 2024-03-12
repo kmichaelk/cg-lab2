@@ -26,6 +26,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       Ширина
     </div>
   </div>
+  <div>
+    <input type="checkbox" id="use-tex" name="use-tex" />
+    <label for="use-tex">Использовать текстуру</label>
+  </div>
   <span id="status">Загрузка...</span>
 `
 
@@ -39,16 +43,25 @@ const tfMinInput = document.querySelector<HTMLInputElement>('#tf-min')!
 const tfWidthInput = document.querySelector<HTMLInputElement>('#tf-width')!
 const getTransformFunctionMax = () => parseInt(tfMinInput.value) + parseInt(tfWidthInput.value)
 
+const texCheckbox = document.querySelector<HTMLInputElement>('#use-tex')!
+const isToUseTexture = () => texCheckbox.checked
+
 const statusLabel = document.querySelector<HTMLSpanElement>('#status')!
 const updateStatus = () => {
   statusLabel.innerHTML = `<b>Слой:</b> ${getSelectedLayer()} | <b>TF:</b> ${getTransformFunctionMax()}`
 }
 
 const renderTomogram = () => {
+  renderer.invalidateTexture()
+
   updateStatus()
 
   renderer.clearView()
-  renderer.drawQuads(tomogram!, getSelectedLayer())
+  if (isToUseTexture()) {
+    renderer.drawUsingTexture(tomogram!, getSelectedLayer())
+  } else {
+    renderer.drawUsingQuads(tomogram!, getSelectedLayer())
+  }
   renderer.flush()
 }
 
@@ -65,6 +78,9 @@ const loadTomogram = (buf: ArrayBuffer) => {
 const debouncedRenderTomogram = debounce(renderTomogram, 5)
 layerInput.addEventListener('input', (e) => {
   debouncedRenderTomogram()
+})
+texCheckbox.addEventListener('change', (e) => {
+  renderTomogram()
 })
 
 const retransferColorsAndRender = () => {

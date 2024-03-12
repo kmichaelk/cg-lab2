@@ -6,6 +6,10 @@
   height: fit-content;
 }
 
+.canvas-wrapper > canvas {
+  display: block;
+}
+
 .canvas-wrapper.grid::before,
 .canvas-wrapper.grid::after {
   content: '';

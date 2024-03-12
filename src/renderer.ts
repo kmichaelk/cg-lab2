@@ -1,6 +1,9 @@
 import vertexShaderSource from './shaders/vertex.glsl'
 import fragmentShaderSource from './shaders/fragment.glsl'
 
+import texturedVertexShaderSource from './shaders/textured/vertex.glsl'
+import texturedFragmentShaderSource from './shaders/textured/fragment.glsl'
+
 import { CachedTomogram } from './types'
 
 const initShader = (gl: WebGLRenderingContext, type: GLenum, source: string) => {
@@ -66,11 +69,30 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
     }),
     (gl, program) => ({})
   )
-  const buffers = {
-    vertex: gl.createBuffer(),
-    index: gl.createBuffer(),
-    color: gl.createBuffer(),
+
+  const buffers: Record<string, WebGLBuffer> = {
+    vertex: gl.createBuffer()!,
+    index: gl.createBuffer()!,
+    color: gl.createBuffer()!,
+    texcoord: gl.createBuffer()!,
   }
+  
+  const { program: programTextured, ...programDataTextured } = createProgram(
+    gl,
+    [
+      { type: gl.VERTEX_SHADER, source: texturedVertexShaderSource },
+      { type: gl.FRAGMENT_SHADER, source: texturedFragmentShaderSource }
+    ],
+    (gl, program) => ({
+      vertexPosition: gl.getAttribLocation(program, 'a_position'),
+      vertexTexcoord: gl.getAttribLocation(program, 'a_texcoord'),
+    }),
+    (gl, program) => ({
+      texture: gl.getUniformLocation(program, 'u_texture')!
+    })
+  )
+  const texture = gl.createTexture()!
+  let textureInitialized = false
 
   const drawQuads = ({
     vertices,
@@ -103,7 +125,8 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
     clearView() {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     },
-    drawQuads(tomogram: CachedTomogram, layer: number) {
+
+    drawUsingQuads(tomogram: CachedTomogram, layer: number) {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
       // drawQuads({
@@ -166,6 +189,67 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
 
       drawQuads({ vertices, indices, colors })
     },
+
+    drawUsingTexture(tomogram: CachedTomogram, layer: number) {
+      if (!textureInitialized) {
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        //
+        const size = tomogram.size.x * tomogram.size.y
+        const texBuffer = new Uint8Array(3 * size)
+        for (let i = 0, offset = layer * size; i < size; i += 4, offset++) {
+          texBuffer[i + 0] = tomogram.cache[offset]
+          texBuffer[i + 1] = tomogram.cache[offset]
+          texBuffer[i + 2] = tomogram.cache[offset]
+        }
+        //
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGB,
+          1,
+          1,
+          0,
+          gl.RGB,
+          gl.UNSIGNED_BYTE,
+          texBuffer,
+        );
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+        textureInitialized = true
+      }
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, 1,
+        -1, -1,
+        1, -1,
+        1, 1,
+      ]), gl.STATIC_DRAW)
+      gl.vertexAttribPointer(programDataTextured.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+      gl.enableVertexAttribArray(programDataTextured.attribLocations.vertexPosition)
+  
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texcoord)
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        0, 0,
+        0, 1,
+        1, 1,
+        1, 0
+      ]), gl.STATIC_DRAW)
+      gl.vertexAttribPointer(programDataTextured.attribLocations.vertexTexcoord, 2, gl.FLOAT, false, 0, 0)
+      gl.enableVertexAttribArray(programDataTextured.attribLocations.vertexTexcoord)
+  
+      gl.useProgram(programTextured)
+  
+      gl.uniform1i(programDataTextured.uniformLocations.texture, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 16 * 6);
+    },
+    invalidateTexture() {
+      textureInitialized = false
+    },
+
     flush() {
       gl.flush()
     }
