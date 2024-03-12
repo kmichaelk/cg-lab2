@@ -89,7 +89,7 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
     const bufferColor = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferColor)
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(programData.attribLocations.vertexColor, 3, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(programData.attribLocations.vertexColor, 1, gl.FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(programData.attribLocations.vertexColor)
 
     gl.useProgram(program)
@@ -119,7 +119,7 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
 
       const vertices = new Float32Array(quads * 8)
       const indices = new Uint32Array(quads * 6)
-      const colors = new Float32Array(quads * 12)
+      const colors = new Float32Array(quads * 4)
 
       let idx = 0
       for (let x = 0; x < sizeX - 1; x++) {
@@ -145,21 +145,10 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
           indices[6 * idx + 4] = 4 * idx + 1
           indices[6 * idx + 5] = 4 * idx + 0
 
-          colors[12 * idx + 0] = tomogram.cache[x + y * sizeX + offset]
-          colors[12 * idx + 1] = tomogram.cache[x + y * sizeX + offset]
-          colors[12 * idx + 2] = tomogram.cache[x + y * sizeX + offset]
-          //
-          colors[12 * idx + 3] = tomogram.cache[x + (y + 1) * sizeX + offset]
-          colors[12 * idx + 4] = tomogram.cache[x + (y + 1) * sizeX + offset]
-          colors[12 * idx + 5] = tomogram.cache[x + (y + 1) * sizeX + offset]
-          //
-          colors[12 * idx + 6] = tomogram.cache[x + 1 + (y + 1) * sizeX + offset]
-          colors[12 * idx + 7] = tomogram.cache[x + 1 + (y + 1) * sizeX + offset]
-          colors[12 * idx + 8] = tomogram.cache[x + 1 + (y + 1) * sizeX + offset]
-          //
-          colors[12 * idx + 9] = tomogram.cache[x + 1 + y * sizeX + offset]
-          colors[12 * idx + 10] = tomogram.cache[x + 1 + y * sizeX + offset]
-          colors[12 * idx + 11] = tomogram.cache[x + 1 + y * sizeX + offset]
+          colors[4 * idx + 0] = tomogram.cache[x + y * sizeX + offset]
+          colors[4 * idx + 1] = tomogram.cache[x + (y + 1) * sizeX + offset]
+          colors[4 * idx + 2] = tomogram.cache[x + 1 + (y + 1) * sizeX + offset]
+          colors[4 * idx + 3] = tomogram.cache[x + 1 + y * sizeX + offset]
 
           idx++
         }
