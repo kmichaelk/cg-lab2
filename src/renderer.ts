@@ -21,7 +21,7 @@ const initShader = (gl: WebGLRenderingContext, type: GLenum, source: string) => 
   return shader
 }
 
-const createProgram = <A, U>(
+const createProgram = <A extends Record<string, number>, U extends Record<string, WebGLUniformLocation>>(
   gl: WebGLRenderingContext,
   shaders: {
     type: GLenum
@@ -66,6 +66,11 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
     }),
     (gl, program) => ({})
   )
+  const buffers = {
+    vertex: gl.createBuffer(),
+    index: gl.createBuffer(),
+    color: gl.createBuffer(),
+  }
 
   const drawQuads = ({
     vertices,
@@ -76,18 +81,15 @@ export const createRenderer = (canvas: HTMLCanvasElement) => {
     indices: Uint32Array
     colors: Float32Array
   }) => {
-    const bufferVertex = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, bufferVertex)
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
     gl.vertexAttribPointer(programData.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(programData.attribLocations.vertexPosition)
 
-    const bufferIndex = gl.createBuffer()
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferIndex)
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.index)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW)
 
-    const bufferColor = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, bufferColor)
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color)
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
     gl.vertexAttribPointer(programData.attribLocations.vertexColor, 1, gl.FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(programData.attribLocations.vertexColor)
