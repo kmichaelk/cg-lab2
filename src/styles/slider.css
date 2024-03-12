@@ -1,0 +1,26 @@
+input[type='range'] {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+}
+
+input[type='range'] + datalist {
+  display: flex;
+  margin-top: -4px;
+}
+
+input[type='range'] + datalist option {
+  display: inline-block;
+  width: calc((100% - 12px) / (var(--list-length) - 1));
+  text-align: center;
+}
+
+input[type='range'] + datalist option:first-child {
+  width: calc((100% - 12px) / ((var(--list-length) - 1) * 2) + 6px);
+  text-align: left;
+}
+
+input[type='range'] + datalist option:last-child {
+  width: calc((100% - 12px) / ((var(--list-length) - 1) * 2) + 6px);
+  text-align: right;
+}
