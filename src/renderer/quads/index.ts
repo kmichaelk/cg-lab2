@@ -68,8 +68,9 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
 
       let idx = 0
       for (let x = 0; x < sizeX; x++) {
+        const bOffset = config.layer! * sizeX
         for (let y = 0; y < sizeY; y++) {
-          const offset = config.layer! * sizeX * sizeY
+          const offset = bOffset * sizeY
 
           vertices[8 * idx + 0] = x
           vertices[8 * idx + 1] = y
