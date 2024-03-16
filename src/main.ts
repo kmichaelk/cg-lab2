@@ -1,6 +1,5 @@
 import { Tomogram, readTomogram } from './data'
-import { QuadsRenderer, RendererConfiguration, createRenderingContext } from './renderer'
-import { TextureRenderer } from './renderer/texture'
+import { QuadsRenderer, RendererConfiguration, TextureRenderer, createRenderingContext } from './renderer'
 import './styles/main.css'
 import debounce from './utils'
 
