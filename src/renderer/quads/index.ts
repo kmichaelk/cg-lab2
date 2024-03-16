@@ -67,8 +67,8 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
       const colors = new Int8Array(quads * 4)
 
       let idx = 0
-      for (let x = 0; x < sizeX - 1; x++) {
-        for (let y = 0; y < sizeY - 1; y++) {
+      for (let x = 0; x < sizeX; x++) {
+        for (let y = 0; y < sizeY; y++) {
           const offset = config.layer! * sizeX * sizeY
 
           vertices[8 * idx + 0] = x
