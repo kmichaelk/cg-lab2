@@ -19,7 +19,9 @@ export interface Renderer {
 
 export interface RendererConfiguration {
   layer: number
-  transferFunctionMax: number
+
+  transferFunctionMin: number
+  transferFunctionWidth: number
 }
 
 export type RendererConfigurationProperty = keyof RendererConfiguration

@@ -32,18 +32,15 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <span id="status">Загрузка...</span>
 `
 const layerInput = document.querySelector<HTMLInputElement>('#layer')!
-const getSelectedLayer = () => parseInt(layerInput.value)
-
 const tfMinInput = document.querySelector<HTMLInputElement>('#tf-min')!
 const tfWidthInput = document.querySelector<HTMLInputElement>('#tf-width')!
-const getTransferFunctionMax = () => parseInt(tfMinInput.value) + parseInt(tfWidthInput.value)
 
 const texCheckbox = document.querySelector<HTMLInputElement>('#use-tex')!
 const isToUseTexture = () => texCheckbox.checked
 
 const statusLabel = document.querySelector<HTMLSpanElement>('#status')!
 const updateStatus = () => {
-  statusLabel.innerHTML = `<b>Слой:</b> ${getSelectedLayer()} | <b>TF:</b> ${getTransferFunctionMax()}`
+  statusLabel.innerHTML = `<b>Слой:</b> ${layerInput.value} | <b>TF Min:</b> ${tfMinInput.value} | <b>TF Width:</b> ${tfWidthInput.value}`
 }
 
 //
@@ -51,8 +48,10 @@ const updateStatus = () => {
 let tomogram: Tomogram | null = null
 const context = createRenderingContext(document.querySelector<HTMLCanvasElement>('#rendition')!)
 const config: RendererConfiguration = {
-  layer: getSelectedLayer(),
-  transferFunctionMax: getTransferFunctionMax()
+  layer: parseInt(layerInput.value),
+
+  transferFunctionMin: parseInt(tfMinInput.value),
+  transferFunctionWidth: parseInt(tfWidthInput.value),
 }
 
 const changeRenderer = () => context.setRenderer(isToUseTexture() ? TextureRenderer : QuadsRenderer)
@@ -78,25 +77,22 @@ const loadTomogram = (buf: ArrayBuffer) => {
   renderTomogram()
 }
 
-const updateLayerAndRender = () => {
-  config.layer = getSelectedLayer()
+const updateAndRender = () => {
+  config.layer = parseInt(layerInput.value)
+  config.transferFunctionMin = parseInt(tfMinInput.value)
+  config.transferFunctionWidth = parseInt(tfWidthInput.value)
+
   renderTomogram()
 }
-const debouncedUpdateLayerAndRender = debounce(updateLayerAndRender, 5)
-layerInput.addEventListener('input', (e) => {
-  debouncedUpdateLayerAndRender()
-})
+
+const debouncedUpdateAndRender = debounce(updateAndRender, 5)
+layerInput.addEventListener('input', (e) => debouncedUpdateAndRender())
+;[tfMinInput, tfWidthInput].forEach((el) => el.addEventListener('input', (e) => debouncedUpdateAndRender()))
+
 texCheckbox.addEventListener('change', (e) => {
   changeRenderer()
   renderTomogram()
 })
-
-const retransferColorsAndRender = () => {
-  config.transferFunctionMax = getTransferFunctionMax()
-  renderTomogram()
-}
-const debouncedRetransferColorsAndRender = debounce(retransferColorsAndRender, 5)
-;[tfMinInput, tfWidthInput].forEach((el) => el.addEventListener('input', (e) => debouncedRetransferColorsAndRender()))
 
 fetch('sample.bin')
   .then((res) => res.arrayBuffer())

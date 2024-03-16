@@ -102,10 +102,13 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
       drawQuads({ vertices, indices, colors })
     },
     changeTriggersCacheUpdate: [
-      'transferFunctionMax'
+      'transferFunctionMin',
+      'transferFunctionWidth',
     ],
     updateCache({ tomogram, config, cache }) {
-      transferTomogramColors(tomogram, cache, 0, config.transferFunctionMax)
+      transferTomogramColors(tomogram, cache,
+        config.transferFunctionMin,
+        config.transferFunctionMin + config.transferFunctionWidth)
     },
     dispose() {
       gl.deleteProgram(program)

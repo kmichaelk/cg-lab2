@@ -7,7 +7,8 @@ import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
 
 export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext): Renderer => {
-  let transferFunctionMax: number
+  let transferFunctionMin: number
+  let transferFunctionWidth: number
 
   const { program, attribs, uniforms } = createProgram(
     gl,
@@ -63,13 +64,18 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     },
     changeTriggersCacheUpdate: [
-      'transferFunctionMax',
+      'transferFunctionMin',
+      'transferFunctionWidth',
       'layer'
     ],
     updateCache({ tomogram, config, cache }) {
-      if (transferFunctionMax != config.transferFunctionMax) {
-        transferTomogramColors(tomogram, cache, 0, config.transferFunctionMax)
-        transferFunctionMax = config.transferFunctionMax
+      if (transferFunctionMin != config.transferFunctionMin || transferFunctionWidth != config.transferFunctionWidth) {
+        transferTomogramColors(tomogram, cache,
+          config.transferFunctionMin,
+          config.transferFunctionMin + config.transferFunctionWidth)
+
+        transferFunctionMin = config.transferFunctionMin
+        transferFunctionWidth = config.transferFunctionWidth
       }
 
       gl.bindTexture(gl.TEXTURE_2D, texture)
