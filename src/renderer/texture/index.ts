@@ -7,6 +7,8 @@ import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
 
 export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext): Renderer => {
+  let transferFunctionMax: number
+
   const { program, attribs, uniforms } = createProgram(
     gl,
     [
@@ -65,7 +67,10 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
       'layer'
     ],
     updateCache({ tomogram, config, cache }) {
-      transferTomogramColors(tomogram, cache, 0, config.transferFunctionMax)
+      if (transferFunctionMax != config.transferFunctionMax) {
+        transferTomogramColors(tomogram, cache, 0, config.transferFunctionMax)
+        transferFunctionMax = config.transferFunctionMax
+      }
 
       gl.bindTexture(gl.TEXTURE_2D, texture)
       //
