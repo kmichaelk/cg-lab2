@@ -8,7 +8,3 @@ export interface Tomogram {
   readonly size: Dimension
   readonly data: Int16Array
 }
-
-export interface CachedTomogram extends Tomogram {
-  cache: Int16Array
-}

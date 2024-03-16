@@ -1,7 +1,6 @@
-import { readTomogram } from './reader'
-import { createRenderer } from './renderer'
-import { cacheTomogramColors, createCachedTomogram } from './tomogram'
-import { CachedTomogram } from './types'
+import { Tomogram, readTomogram } from './data'
+import { QuadsRenderer, RendererConfiguration, createRenderingContext } from './renderer'
+import { TextureRenderer } from './renderer/texture'
 import './styles/main.css'
 import debounce from './utils'
 
@@ -32,42 +31,46 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
   <span id="status">Загрузка...</span>
 `
-
-let tomogram: CachedTomogram | null = null
-const renderer = createRenderer(document.querySelector<HTMLCanvasElement>('#rendition')!)
-
 const layerInput = document.querySelector<HTMLInputElement>('#layer')!
 const getSelectedLayer = () => parseInt(layerInput.value)
 
 const tfMinInput = document.querySelector<HTMLInputElement>('#tf-min')!
 const tfWidthInput = document.querySelector<HTMLInputElement>('#tf-width')!
-const getTransformFunctionMax = () => parseInt(tfMinInput.value) + parseInt(tfWidthInput.value)
+const getTransferFunctionMax = () => parseInt(tfMinInput.value) + parseInt(tfWidthInput.value)
 
 const texCheckbox = document.querySelector<HTMLInputElement>('#use-tex')!
 const isToUseTexture = () => texCheckbox.checked
 
 const statusLabel = document.querySelector<HTMLSpanElement>('#status')!
 const updateStatus = () => {
-  statusLabel.innerHTML = `<b>Слой:</b> ${getSelectedLayer()} | <b>TF:</b> ${getTransformFunctionMax()}`
+  statusLabel.innerHTML = `<b>Слой:</b> ${getSelectedLayer()} | <b>TF:</b> ${getTransferFunctionMax()}`
 }
 
-const renderTomogram = () => {
-  renderer.invalidateTexture()
+//
 
+let tomogram: Tomogram | null = null
+const context = createRenderingContext(document.querySelector<HTMLCanvasElement>('#rendition')!)
+const config: RendererConfiguration = {
+  layer: getSelectedLayer(),
+  transferFunctionMax: getTransferFunctionMax()
+}
+
+const changeRenderer = () => context.setRenderer(isToUseTexture() ? TextureRenderer : QuadsRenderer)
+changeRenderer()
+
+
+const renderTomogram = () => {
   updateStatus()
 
-  renderer.clearView()
-  if (isToUseTexture()) {
-    renderer.drawUsingTexture(tomogram!, getSelectedLayer())
-  } else {
-    renderer.drawUsingQuads(tomogram!, getSelectedLayer())
-  }
-  renderer.flush()
+  context.configure(tomogram!, config)
+
+  context.clear()
+  context.render()
+  context.flush()
 }
 
 const loadTomogram = (buf: ArrayBuffer) => {
-  tomogram = createCachedTomogram(readTomogram(buf))
-  cacheTomogramColors(tomogram, 0, getTransformFunctionMax())
+  tomogram = readTomogram(buf)
 
   layerInput.disabled = false
   layerInput.max = (tomogram.size.z - 1).toString()
@@ -75,16 +78,21 @@ const loadTomogram = (buf: ArrayBuffer) => {
   renderTomogram()
 }
 
-const debouncedRenderTomogram = debounce(renderTomogram, 5)
+const updateLayerAndRender = () => {
+  config.layer = getSelectedLayer()
+  renderTomogram()
+}
+const debouncedUpdateLayerAndRender = debounce(updateLayerAndRender, 5)
 layerInput.addEventListener('input', (e) => {
-  debouncedRenderTomogram()
+  debouncedUpdateLayerAndRender()
 })
 texCheckbox.addEventListener('change', (e) => {
+  changeRenderer()
   renderTomogram()
 })
 
 const retransferColorsAndRender = () => {
-  cacheTomogramColors(tomogram!, 0, getTransformFunctionMax())
+  config.transferFunctionMax = getTransferFunctionMax()
   renderTomogram()
 }
 const debouncedRetransferColorsAndRender = debounce(retransferColorsAndRender, 5)
