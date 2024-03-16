@@ -1,4 +1,4 @@
-import { Tomogram } from '../data/types'
+import { Tomogram } from '@/data'
 import { Renderer, RendererConfiguration, RendererConfigurationProperty } from './types'
 
 interface Base2DRendererState {

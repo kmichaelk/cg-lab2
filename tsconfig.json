@@ -19,6 +19,11 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     "types": [
       "vite-plugin-glsl/ext"
     ]

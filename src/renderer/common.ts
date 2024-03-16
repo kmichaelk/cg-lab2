@@ -1,5 +1,5 @@
-import { Tomogram } from '../data/types'
-import { clamp } from '../utils'
+import { Tomogram } from '@/data'
+import { clamp } from '@/utils'
 
 export const transferTomogramColors = (tomogram: Tomogram, cache: Int16Array, min: number, max: number) => {
   for (let i = 0; i < tomogram.data.length; i++) {

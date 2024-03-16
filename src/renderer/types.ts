@@ -1,4 +1,4 @@
-import { Tomogram } from '../data/types'
+import { Tomogram } from '@/data'
 
 export interface TomogramRenderingContext {
   setRenderer: (initializer: RendererInitializer) => void
