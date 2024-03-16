@@ -1,5 +1,11 @@
 import { Tomogram, readTomogram } from './data'
-import { QuadsRenderer, RendererConfiguration, TextureRenderer, createRenderingContext } from './renderer'
+import {
+  QuadStripRenderer,
+  QuadsRenderer,
+  RendererConfiguration,
+  TextureRenderer,
+  createRenderingContext
+} from './renderer'
 import './styles/main.css'
 import debounce from './utils'
 
@@ -25,17 +31,24 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
   </div>
   <div>
-    <input type="checkbox" id="use-tex" name="use-tex" />
-    <label for="use-tex">Использовать текстуру</label>
+    <label for="renderer">Рендерер: </label>
+    <select id="renderer" name="renderer"></select>
   </div>
   <span id="status">Загрузка...</span>
 `
+const renderers = [
+  { name: 'Quads (Triangles)', initializer: QuadsRenderer },
+  { name: 'Quad Strip (Triangle Strip)', initializer: QuadStripRenderer },
+  { name: 'Texture', initializer: TextureRenderer },
+]
+
 const layerInput = document.querySelector<HTMLInputElement>('#layer')!
 const tfMinInput = document.querySelector<HTMLInputElement>('#tf-min')!
 const tfWidthInput = document.querySelector<HTMLInputElement>('#tf-width')!
+const rendererSelect = document.querySelector<HTMLSelectElement>('#renderer')!
 
-const texCheckbox = document.querySelector<HTMLInputElement>('#use-tex')!
-const isToUseTexture = () => texCheckbox.checked
+rendererSelect.innerHTML = renderers.map((el, idx) => `<option value="${idx}">${el.name}</option>`)
+  .join('')
 
 const statusLabel = document.querySelector<HTMLSpanElement>('#status')!
 const updateStatus = () => {
@@ -50,12 +63,11 @@ const config: RendererConfiguration = {
   layer: parseInt(layerInput.value),
 
   transferFunctionMin: parseInt(tfMinInput.value),
-  transferFunctionWidth: parseInt(tfWidthInput.value),
+  transferFunctionWidth: parseInt(tfWidthInput.value)
 }
 
-const changeRenderer = () => context.setRenderer(isToUseTexture() ? TextureRenderer : QuadsRenderer)
+const changeRenderer = () => context.setRenderer(renderers[parseInt(rendererSelect.value)].initializer)
 changeRenderer()
-
 
 const renderTomogram = () => {
   updateStatus()
@@ -88,7 +100,7 @@ const debouncedUpdateAndRender = debounce(updateAndRender, 5)
 layerInput.addEventListener('input', (e) => debouncedUpdateAndRender())
 ;[tfMinInput, tfWidthInput].forEach((el) => el.addEventListener('input', (e) => debouncedUpdateAndRender()))
 
-texCheckbox.addEventListener('change', (e) => {
+rendererSelect.addEventListener('change', (e) => {
   changeRenderer()
   renderTomogram()
 })
