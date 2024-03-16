@@ -35,7 +35,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
   }: {
     vertices: Float32Array
     indices: Uint32Array
-    colors: Int8Array
+    colors: Uint8Array
   }) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
@@ -57,14 +57,14 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0)
   }
 
+  let quads: number
+  let vertices: Float32Array
+  let indices: Uint32Array
+  let colors: Uint8Array
+
   return Base2DRenderer({
     render({ tomogram, config, cache }) {
       const { x: sizeX, y: sizeY } = tomogram.size
-      const quads = sizeX * sizeY
-
-      const vertices = new Float32Array(quads * 8)
-      const indices = new Uint32Array(quads * 6)
-      const colors = new Int8Array(quads * 4)
 
       let idx = 0
       for (let x = 0; x < sizeX; x++) {
@@ -110,6 +110,14 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
       transferTomogramColors(tomogram, cache,
         config.transferFunctionMin,
         config.transferFunctionMin + config.transferFunctionWidth)
+      
+      const _quads = tomogram.size.x * tomogram.size.y
+      if (quads != _quads) {
+        quads = _quads
+        vertices = new Float32Array(quads * 8)
+        indices = new Uint32Array(quads * 6)
+        colors = new Uint8Array(quads * 4)
+      }
     },
     dispose() {
       gl.deleteProgram(program)
