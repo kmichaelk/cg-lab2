@@ -34,20 +34,12 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
   const verticesCount = 6
   const vertices = new Float32Array(verticesCount * 2)
   // [
-  //   0, 0,
-  //   x, 0,
-  //   0, y,
-  //   0, y,
-  //   x, 0,
-  //   x, y,
+  //   0, 0,   x, 0,   0, y,
+  //   0, y,   x, 0,   x, y,
   // ]
   const texcoord = new Float32Array([
-    0.0, 0.0,
-    1.0, 0.0,
-    0.0, 1.0,
-    0.0, 1.0,
-    1.0, 0.0,
-    1.0, 1.0,
+    0.0, 0.0,   1.0, 0.0,   0.0, 1.0,
+    0.0, 1.0,   1.0, 0.0,   1.0, 1.0,
   ])
 
   let textureBuffer: Uint8Array

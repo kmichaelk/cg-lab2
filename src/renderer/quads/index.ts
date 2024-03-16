@@ -93,8 +93,8 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
 
           colors[4 * idx + 0] = cache[x + y * sizeX + offset]
           colors[4 * idx + 1] = cache[x + (y + 1) * sizeX + offset]
-          colors[4 * idx + 2] = cache[x + 1 + (y + 1) * sizeX + offset]
-          colors[4 * idx + 3] = cache[x + 1 + y * sizeX + offset]
+          colors[4 * idx + 2] = cache[(x + 1) + (y + 1) * sizeX + offset]
+          colors[4 * idx + 3] = cache[(x + 1) + y * sizeX + offset]
 
           idx++
         }
