@@ -7,7 +7,7 @@ interface Base2DRendererState {
   cache: Int16Array
 }
 
-export const Base2DRenderer = ({
+export const BaseRenderer = ({
   render,
   changeTriggersCacheUpdate,
   updateCache,

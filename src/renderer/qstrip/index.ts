@@ -1,7 +1,7 @@
 import { Renderer, RendererInitializer } from '../types'
 import { createBuffers, createProgram } from '../utils'
 import { transferTomogramColors } from '../common'
-import { Base2DRenderer } from '../base2d'
+import { BaseRenderer } from '../base'
 
 import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
@@ -53,7 +53,7 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGLRenderingContext
   let vertices: Float32Array
   let colors: Uint8Array
 
-  return Base2DRenderer({
+  return BaseRenderer({
     render({ tomogram, config, cache }) {
       const { x: sizeX, y: sizeY } = tomogram.size
 

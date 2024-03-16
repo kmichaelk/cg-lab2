@@ -1,7 +1,7 @@
 import { Renderer, RendererInitializer } from '../types'
 import { createBuffers, createProgram } from '../utils'
 import { transferTomogramColors } from '../common'
-import { Base2DRenderer } from '../base2d'
+import { BaseRenderer } from '../base'
 
 import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
@@ -48,7 +48,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
   let textureBuffer: Uint8Array
   const texture = gl.createTexture()!
 
-  return Base2DRenderer({
+  return BaseRenderer({
     render({ tomogram }) {
       gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
