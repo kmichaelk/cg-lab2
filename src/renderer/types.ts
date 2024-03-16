@@ -3,7 +3,7 @@ import { Tomogram } from '../data/types'
 export interface TomogramRenderingContext {
   setRenderer: (initializer: RendererInitializer) => void
   configure: (tomogram: Tomogram, config: RendererConfiguration) => void
-  
+
   clear: () => void
   render: () => void
   flush: () => void

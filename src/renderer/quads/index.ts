@@ -22,6 +22,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
     })
   )
 
+  // prettier-ignore
   const buffers = createBuffers(gl, [
     'vertex',
     'index',
@@ -102,15 +103,19 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
 
       drawQuads({ vertices, indices, colors })
     },
+    // prettier-ignore
     changeTriggersCacheUpdate: [
       'transferFunctionMin',
       'transferFunctionWidth',
     ],
     updateCache({ tomogram, config, cache }) {
-      transferTomogramColors(tomogram, cache,
+      transferTomogramColors(
+        tomogram,
+        cache,
         config.transferFunctionMin,
-        config.transferFunctionMin + config.transferFunctionWidth)
-      
+        config.transferFunctionMin + config.transferFunctionWidth
+      )
+
       const _quads = tomogram.size.x * tomogram.size.y
       if (quads != _quads) {
         quads = _quads
@@ -121,7 +126,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
     },
     dispose() {
       gl.deleteProgram(program)
-      Object.values(buffers).forEach(buf => gl.deleteBuffer(buf))
+      Object.values(buffers).forEach((buf) => gl.deleteBuffer(buf))
     }
   })
 }

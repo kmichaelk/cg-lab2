@@ -18,7 +18,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
     ],
     (gl, program) => ({
       position: gl.getAttribLocation(program, 'a_position'),
-      texcoord: gl.getAttribLocation(program, 'a_texcoord'),
+      texcoord: gl.getAttribLocation(program, 'a_texcoord')
     }),
     (gl, program) => ({
       resolution: gl.getUniformLocation(program, 'u_resolution')!,
@@ -26,6 +26,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
     })
   )
 
+  // prettier-ignore
   const buffers = createBuffers(gl, [
     'vertex',
     'texcoord',
@@ -37,6 +38,8 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
   //   0, 0,   x, 0,   0, y,
   //   0, y,   x, 0,   x, y,
   // ]
+
+  // prettier-ignore
   const texcoord = new Float32Array([
     0.0, 0.0,   1.0, 0.0,   0.0, 1.0,
     0.0, 1.0,   1.0, 0.0,   1.0, 1.0,
@@ -62,8 +65,9 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
       gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
       gl.uniform1i(uniforms.texture, 0)
 
-      gl.drawArrays(gl.TRIANGLES, 0, verticesCount);
+      gl.drawArrays(gl.TRIANGLES, 0, verticesCount)
     },
+    // prettier-ignore
     changeTriggersCacheUpdate: [
       'transferFunctionMin',
       'transferFunctionWidth',
@@ -71,9 +75,12 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
     ],
     updateCache({ tomogram, config, cache }) {
       if (transferFunctionMin != config.transferFunctionMin || transferFunctionWidth != config.transferFunctionWidth) {
-        transferTomogramColors(tomogram, cache,
+        transferTomogramColors(
+          tomogram,
+          cache,
           config.transferFunctionMin,
-          config.transferFunctionMin + config.transferFunctionWidth)
+          config.transferFunctionMin + config.transferFunctionWidth
+        )
 
         transferFunctionMin = config.transferFunctionMin
         transferFunctionWidth = config.transferFunctionWidth
@@ -97,7 +104,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
         textureBuffer[i + 1] = cache[offset]
         textureBuffer[i + 2] = cache[offset]
       }
-      
+
       gl.bindTexture(gl.TEXTURE_2D, texture)
       gl.texImage2D(
         gl.TEXTURE_2D,
@@ -108,9 +115,9 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
         0,
         gl.RGB,
         gl.UNSIGNED_BYTE,
-        textureBuffer,
-      );
-      
+        textureBuffer
+      )
+
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
@@ -119,7 +126,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
     dispose() {
       gl.deleteProgram(program)
       gl.deleteTexture(texture)
-      Object.values(buffers).forEach(buf => gl.deleteBuffer(buf))
+      Object.values(buffers).forEach((buf) => gl.deleteBuffer(buf))
     }
   })
 }

@@ -22,19 +22,14 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGLRenderingContext
     })
   )
 
+  // prettier-ignore
   const buffers = createBuffers(gl, [
     'vertex',
     'index',
     'color',
   ])
 
-  const drawQuadStrip = ({
-    vertices,
-    colors
-  }: {
-    vertices: Float32Array
-    colors: Uint8Array
-  }) => {
+  const drawQuadStrip = ({ vertices, colors }: { vertices: Float32Array; colors: Uint8Array }) => {
     gl.frontFace(gl.CW)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
@@ -91,15 +86,19 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGLRenderingContext
 
       drawQuadStrip({ vertices, colors })
     },
+    // prettier-ignore
     changeTriggersCacheUpdate: [
       'transferFunctionMin',
       'transferFunctionWidth',
     ],
     updateCache({ tomogram, config, cache }) {
-      transferTomogramColors(tomogram, cache,
+      transferTomogramColors(
+        tomogram,
+        cache,
         config.transferFunctionMin,
-        config.transferFunctionMin + config.transferFunctionWidth)
-      
+        config.transferFunctionMin + config.transferFunctionWidth
+      )
+
       const _quads = tomogram.size.x * tomogram.size.y
       if (quads != _quads) {
         quads = _quads
@@ -109,7 +108,7 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGLRenderingContext
     },
     dispose() {
       gl.deleteProgram(program)
-      Object.values(buffers).forEach(buf => gl.deleteBuffer(buf))
+      Object.values(buffers).forEach((buf) => gl.deleteBuffer(buf))
     }
   })
 }

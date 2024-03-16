@@ -42,4 +42,4 @@ export const createProgram = <A extends Record<string, number>, U extends Record
 }
 
 export const createBuffers = <K extends string>(gl: WebGLRenderingContext, keys: K[]): Record<K, WebGLBuffer> =>
-  keys.reduce((acc, cur) => (acc[cur] = gl.createBuffer()!, acc), <Record<K, WebGLBuffer>>{})
+  keys.reduce((acc, cur) => ((acc[cur] = gl.createBuffer()!), acc), <Record<K, WebGLBuffer>>{})

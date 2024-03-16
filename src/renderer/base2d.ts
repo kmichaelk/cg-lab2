@@ -7,9 +7,14 @@ interface Base2DRendererState {
   cache: Int16Array
 }
 
-export const Base2DRenderer = ({ render, changeTriggersCacheUpdate, updateCache, dispose }: {
+export const Base2DRenderer = ({
+  render,
+  changeTriggersCacheUpdate,
+  updateCache,
+  dispose
+}: {
   render: (state: Base2DRendererState) => void
-  changeTriggersCacheUpdate: RendererConfigurationProperty[],
+  changeTriggersCacheUpdate: RendererConfigurationProperty[]
   updateCache: (state: Base2DRendererState) => void
   dispose: () => void
 }): Renderer => {
