@@ -31,32 +31,37 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
     'texcoord',
   ])
 
+  const verticesCount = 6
+  const vertices = new Float32Array(verticesCount * 2)
+  // [
+  //   0, 0,
+  //   x, 0,
+  //   0, y,
+  //   0, y,
+  //   x, 0,
+  //   x, y,
+  // ]
+  const texcoord = new Float32Array([
+    0.0, 0.0,
+    1.0, 0.0,
+    0.0, 1.0,
+    0.0, 1.0,
+    1.0, 0.0,
+    1.0, 1.0,
+  ])
+
   let textureBuffer: Uint8Array
   const texture = gl.createTexture()!
 
   return Base2DRenderer({
     render({ tomogram }) {
       gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        0, 0,
-        tomogram.size.x, 0,
-        0, tomogram.size.y,
-        0, tomogram.size.y,
-        tomogram.size.x, 0,
-        tomogram.size.x, tomogram.size.y,
-      ]), gl.STATIC_DRAW)
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
       gl.vertexAttribPointer(attribs.position, 2, gl.FLOAT, false, 0, 0)
       gl.enableVertexAttribArray(attribs.position)
 
       gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texcoord)
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        0.0, 0.0,
-        1.0, 0.0,
-        0.0, 1.0,
-        0.0, 1.0,
-        1.0, 0.0,
-        1.0, 1.0,
-      ]), gl.STATIC_DRAW)
+      gl.bufferData(gl.ARRAY_BUFFER, texcoord, gl.STATIC_DRAW)
       gl.vertexAttribPointer(attribs.texcoord, 2, gl.FLOAT, false, 0, 0)
       gl.enableVertexAttribArray(attribs.texcoord)
 
@@ -65,7 +70,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
       gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
       gl.uniform1i(uniforms.texture, 0)
 
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl.drawArrays(gl.TRIANGLES, 0, verticesCount);
     },
     changeTriggersCacheUpdate: [
       'transferFunctionMin',
@@ -82,6 +87,13 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
         transferFunctionWidth = config.transferFunctionWidth
       }
 
+      vertices[2] = tomogram.size.x
+      vertices[5] = tomogram.size.y
+      vertices[7] = tomogram.size.y
+      vertices[8] = tomogram.size.x
+      vertices[10] = tomogram.size.x
+      vertices[11] = tomogram.size.y
+
       const size = tomogram.size.x * tomogram.size.y
       const pixels = size * 3
       const bufSize = 3 * pixels
@@ -93,7 +105,6 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
         textureBuffer[i + 1] = cache[offset]
         textureBuffer[i + 2] = cache[offset]
       }
-      console.log(textureBuffer.length)
       
       gl.bindTexture(gl.TEXTURE_2D, texture)
       gl.texImage2D(
