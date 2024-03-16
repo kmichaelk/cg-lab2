@@ -14,10 +14,12 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
       { type: gl.FRAGMENT_SHADER, source: shaderSourceFragment }
     ],
     (gl, program) => ({
-      vertexPosition: gl.getAttribLocation(program, 'a_position'),
-      vertexColor: gl.getAttribLocation(program, 'a_color')
+      position: gl.getAttribLocation(program, 'a_position'),
+      color: gl.getAttribLocation(program, 'a_color')
     }),
-    (gl, program) => ({})
+    (gl, program) => ({
+      resolution: gl.getUniformLocation(program, 'u_resolution')!
+    })
   )
 
   const buffers = createBuffers(gl, [
@@ -37,18 +39,20 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
   }) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(attribs.vertexPosition, 2, gl.FLOAT, false, 0, 0)
-    gl.enableVertexAttribArray(attribs.vertexPosition)
+    gl.vertexAttribPointer(attribs.position, 2, gl.FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(attribs.position)
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.index)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color)
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(attribs.vertexColor, 1, gl.UNSIGNED_BYTE, true, 0, 0)
-    gl.enableVertexAttribArray(attribs.vertexColor)
+    gl.vertexAttribPointer(attribs.color, 1, gl.UNSIGNED_BYTE, true, 0, 0)
+    gl.enableVertexAttribArray(attribs.color)
 
     gl.useProgram(program)
+
+    gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
 
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0)
   }
@@ -93,11 +97,6 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
 
           idx++
         }
-      }
-
-      for (let i = 0; i < vertices.length - 1; i += 2) {
-        vertices[i + 0] = (2 * vertices[i + 0]) / sizeX - 1
-        vertices[i + 1] = (2 * vertices[i + 1]) / sizeY - 1
       }
 
       drawQuads({ vertices, indices, colors })
