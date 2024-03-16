@@ -33,7 +33,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
   }: {
     vertices: Float32Array
     indices: Uint32Array
-    colors: Float32Array
+    colors: Int8Array
   }) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
@@ -45,7 +45,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color)
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(attribs.vertexColor, 1, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(attribs.vertexColor, 1, gl.UNSIGNED_BYTE, true, 0, 0)
     gl.enableVertexAttribArray(attribs.vertexColor)
 
     gl.useProgram(program)
@@ -60,7 +60,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
 
       const vertices = new Float32Array(quads * 8)
       const indices = new Uint32Array(quads * 6)
-      const colors = new Float32Array(quads * 4)
+      const colors = new Int8Array(quads * 4)
 
       let idx = 0
       for (let x = 0; x < sizeX - 1; x++) {
@@ -98,9 +98,6 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGLRenderingContext): R
       for (let i = 0; i < vertices.length - 1; i += 2) {
         vertices[i + 0] = (2 * vertices[i + 0]) / sizeX - 1
         vertices[i + 1] = (2 * vertices[i + 1]) / sizeY - 1
-      }
-      for (let i = 0; i < colors.length; i++) {
-        colors[i] /= 255
       }
 
       drawQuads({ vertices, indices, colors })
