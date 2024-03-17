@@ -94,12 +94,11 @@ export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext):
       vertices[11] = tomogram.size.y
 
       const size = tomogram.size.x * tomogram.size.y
-      const pixels = size * 3
-      const bufSize = 3 * pixels
+      const bufSize = size * 3
       if (textureBuffer?.length != bufSize) {
         textureBuffer = new Uint8Array(bufSize)
       }
-      for (let i = 0, offset = config.layer * size; i < pixels; i += 3, offset++) {
+      for (let i = 0, offset = config.layer * size; i < bufSize; i += 3, offset++) {
         textureBuffer[i + 0] = cache[offset]
         textureBuffer[i + 1] = cache[offset]
         textureBuffer[i + 2] = cache[offset]
