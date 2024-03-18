@@ -8,6 +8,7 @@ export const initShader = (gl: WebGLRenderingContext, type: GLenum, source: stri
   gl.compileShader(shader)
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error(source)
     console.error(gl.getShaderInfoLog(shader))
     gl.deleteShader(shader)
     throw new Error('Failed to compile shader')
