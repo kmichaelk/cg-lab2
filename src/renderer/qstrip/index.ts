@@ -6,7 +6,7 @@ import { BaseRenderer } from '../base'
 import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
 
-export const QuadStripRenderer: RendererInitializer = (gl: WebGLRenderingContext): Renderer => {
+export const QuadStripRenderer: RendererInitializer = (gl: WebGL2RenderingContext): Renderer => {
   const { program, attribs, uniforms } = createProgram(
     gl,
     [

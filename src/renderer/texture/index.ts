@@ -6,7 +6,7 @@ import { BaseRenderer } from '../base'
 import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
 
-export const TextureRenderer: RendererInitializer = (gl: WebGLRenderingContext): Renderer => {
+export const TextureRenderer: RendererInitializer = (gl: WebGL2RenderingContext): Renderer => {
   let transferFunctionMin: number
   let transferFunctionWidth: number
 

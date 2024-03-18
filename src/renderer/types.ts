@@ -9,7 +9,7 @@ export interface TomogramRenderingContext {
   flush: () => void
 }
 
-export type RendererInitializer = (gl: WebGLRenderingContext) => Renderer
+export type RendererInitializer = (gl: WebGL2RenderingContext) => Renderer
 
 export interface Renderer {
   render: () => void
