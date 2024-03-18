@@ -7,7 +7,7 @@ import shaderSourceVertex from './shaders/vertex.glsl'
 import shaderSourceFragment from './shaders/fragment.glsl'
 
 export const QuadsRenderer: RendererInitializer = (gl: WebGL2RenderingContext): Renderer => {
-  const { program, attribs, uniforms } = createProgram(
+  const { program, attribs, uniforms, shaders } = createProgram(
     gl,
     [
       { type: gl.VERTEX_SHADER, source: shaderSourceVertex },
@@ -126,6 +126,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGL2RenderingContext): 
     },
     dispose() {
       gl.deleteProgram(program)
+      shaders.forEach((shader) => gl.deleteShader(shader))
       Object.values(buffers).forEach((buf) => gl.deleteBuffer(buf))
     }
   })

@@ -10,7 +10,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGL2RenderingContext)
   let transferFunctionMin: number
   let transferFunctionWidth: number
 
-  const { program, attribs, uniforms } = createProgram(
+  const { program, attribs, uniforms, shaders } = createProgram(
     gl,
     [
       { type: gl.VERTEX_SHADER, source: shaderSourceVertex },
@@ -125,6 +125,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGL2RenderingContext)
     dispose() {
       gl.deleteProgram(program)
       gl.deleteTexture(texture)
+      shaders.forEach((shader) => gl.deleteShader(shader))
       Object.values(buffers).forEach((buf) => gl.deleteBuffer(buf))
     }
   })

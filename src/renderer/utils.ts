@@ -27,7 +27,8 @@ export const createProgram = <A extends Record<string, number>, U extends Record
   uniformLocationsExtractor: (gl: WebGLRenderingContext, program: WebGLProgram) => U
 ) => {
   const program = gl.createProgram()!
-  shaders.forEach(({ type, source }) => gl.attachShader(program, initShader(gl, type, source)))
+  const compiledShaders = shaders.map(({ type, source }) => initShader(gl, type, source))
+  compiledShaders.forEach((shader) => gl.attachShader(program, shader))
   gl.linkProgram(program)
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
@@ -38,7 +39,8 @@ export const createProgram = <A extends Record<string, number>, U extends Record
   return {
     program,
     attribs: attribLocationsExtractor(gl, program),
-    uniforms: uniformLocationsExtractor(gl, program)
+    uniforms: uniformLocationsExtractor(gl, program),
+    shaders: compiledShaders
   }
 }
 
