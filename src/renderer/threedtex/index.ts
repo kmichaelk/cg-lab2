@@ -1,3 +1,5 @@
+import { mat4 } from 'gl-matrix'
+
 import { Renderer, RendererInitializer } from '../types'
 import { createBuffers, createProgram } from '../utils'
 import { transferTomogramColors } from '../common'
@@ -13,6 +15,14 @@ export const ThreeDTextureRenderer: RendererInitializer = (gl: WebGL2RenderingCo
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   gl.enable(gl.BLEND)
 
+  const matrices = {
+    projection: mat4.perspectiveFromFieldOfView(mat4.create(), Math.PI / 4, 1, 64),
+    model: mat4.lookAt(mat4.create(), [0, 0, 3.5], [0, 0, 0], [0, 1, 0]),
+    texProjection: mat4.create()
+  }
+
+  let angle = 0
+
   const { program, attribs, uniforms, shaders } = createProgram(
     gl,
     [
@@ -25,7 +35,10 @@ export const ThreeDTextureRenderer: RendererInitializer = (gl: WebGL2RenderingCo
     }),
     (gl, program) => ({
       resolution: gl.getUniformLocation(program, 'u_resolution')!,
-      texture: gl.getUniformLocation(program, 'u_texture')!
+      texture: gl.getUniformLocation(program, 'u_texture')!,
+      projection: gl.getUniformLocation(program, 'u_projection')!,
+      model: gl.getUniformLocation(program, 'u_model')!,
+      texProjection: gl.getUniformLocation(program, 'u_texProjection')!
     })
   )
 
@@ -75,6 +88,15 @@ export const ThreeDTextureRenderer: RendererInitializer = (gl: WebGL2RenderingCo
       gl.useProgram(program)
 
       gl.uniform3f(uniforms.resolution, 1, 1, tomogram.size.z)
+      gl.uniformMatrix4fv(uniforms.projection, false, matrices.projection)
+      gl.uniformMatrix4fv(uniforms.model, false, matrices.model)
+
+      angle += 0.1;
+      mat4.translate(matrices.texProjection, matrices.texProjection, [.5, .5, 0]);
+      mat4.rotateY(matrices.texProjection, matrices.texProjection, 0.01)
+      mat4.translate(matrices.texProjection, matrices.texProjection, [-.5, -.5, 0])
+      gl.uniformMatrix4fv(uniforms.texProjection, false, matrices.texProjection)
+
       gl.uniform1i(uniforms.texture, 0)
 
       gl.drawArrays(gl.TRIANGLES, 0, verticesCount)

@@ -4,6 +4,8 @@ import {
   QuadsRenderer,
   RendererConfiguration,
   TextureRenderer,
+  ThreeDRenderer,
+  ThreeDTextureRenderer,
   createRenderingContext
 } from './renderer'
 import './styles/main.css'
@@ -26,7 +28,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       Минимум
     </div>
     <div style="flex: 1">
-      <input id="tf-width" type="range" min="1" max="255" value="1">
+      <input id="tf-width" type="range" min="1" max="255" value="128">
       Ширина
     </div>
   </div>
@@ -35,11 +37,14 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <select id="renderer" name="renderer"></select>
   </div>
   <span id="status">Загрузка...</span>
+  <span id="fps"></span>
 `
 const renderers = [
   { name: 'Quads (Triangles)', initializer: QuadsRenderer },
   { name: 'Quad Strip (Triangle Strip)', initializer: QuadStripRenderer },
   { name: 'Texture', initializer: TextureRenderer },
+  { name: '3D (2D Atlas)', initializer: ThreeDRenderer },
+  { name: '3D (3D Texture)', initializer: ThreeDTextureRenderer },
 ]
 
 const layerInput = document.querySelector<HTMLInputElement>('#layer')!
@@ -49,7 +54,9 @@ const rendererSelect = document.querySelector<HTMLSelectElement>('#renderer')!
 
 rendererSelect.innerHTML = renderers.map((el, idx) => `<option value="${idx}">${el.name}</option>`)
   .join('')
+rendererSelect.value = '4'
 
+const fpsLabel = document.querySelector<HTMLSpanElement>('#fps')!
 const statusLabel = document.querySelector<HTMLSpanElement>('#status')!
 const updateStatus = () => {
   statusLabel.innerHTML = `<b>Слой:</b> ${layerInput.value} | <b>TF Min:</b> ${tfMinInput.value} | <b>TF Width:</b> ${tfWidthInput.value}`
@@ -108,3 +115,21 @@ rendererSelect.addEventListener('change', (e) => {
 fetch('sample.bin')
   .then((res) => res.arrayBuffer())
   .then((buf) => loadTomogram(buf))
+
+
+let lastFrameTime = 0
+const rerender = () => {
+  if (tomogram != null) {
+    context.clear()
+    context.render()
+    context.flush()
+
+    const fps = 1 / ((performance.now() - lastFrameTime) / 1000)
+    lastFrameTime = performance.now()
+
+    fpsLabel.innerText = `${fps.toFixed(2)} FPS`
+  }
+  requestAnimationFrame(rerender)
+}
+
+requestAnimationFrame(rerender)
