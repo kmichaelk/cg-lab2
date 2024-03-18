@@ -62,7 +62,7 @@ export const TextureRenderer: RendererInitializer = (gl: WebGL2RenderingContext)
 
       gl.useProgram(program)
 
-      gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
+      gl.uniform2f(uniforms.resolution, tomogram.size.x, tomogram.size.y)
       gl.uniform1i(uniforms.texture, 0)
 
       gl.drawArrays(gl.TRIANGLES, 0, verticesCount)

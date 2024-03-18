@@ -30,10 +30,12 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGL2RenderingContext): 
   ])
 
   const drawQuads = ({
+    dimen,
     vertices,
     indices,
     colors
   }: {
+    dimen: { width: number, height: number }
     vertices: Float32Array
     indices: Uint32Array
     colors: Uint8Array
@@ -53,7 +55,7 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGL2RenderingContext): 
 
     gl.useProgram(program)
 
-    gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
+    gl.uniform2f(uniforms.resolution, dimen.width, dimen.height)
 
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0)
   }
@@ -101,7 +103,10 @@ export const QuadsRenderer: RendererInitializer = (gl: WebGL2RenderingContext): 
         }
       }
 
-      drawQuads({ vertices, indices, colors })
+      drawQuads({
+        dimen: { width: tomogram.size.x, height: tomogram.size.y },
+        vertices, indices, colors
+      })
     },
     // prettier-ignore
     changeTriggersCacheUpdate: [

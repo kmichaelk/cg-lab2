@@ -29,7 +29,15 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGL2RenderingContex
     'color',
   ])
 
-  const drawQuadStrip = ({ vertices, colors }: { vertices: Float32Array; colors: Uint8Array }) => {
+  const drawQuadStrip = ({
+    dimen,
+    vertices,
+    colors
+  }: {
+    dimen: { width: number, height: number }
+    vertices: Float32Array
+    colors: Uint8Array
+  }) => {
     gl.frontFace(gl.CW)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex)
@@ -44,7 +52,7 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGL2RenderingContex
 
     gl.useProgram(program)
 
-    gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
+    gl.uniform2f(uniforms.resolution, dimen.width, dimen.height)
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 2)
   }
@@ -84,7 +92,10 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGL2RenderingContex
         }
       }
 
-      drawQuadStrip({ vertices, colors })
+      drawQuadStrip({
+        dimen: { width: tomogram.size.x, height: tomogram.size.y },
+        vertices, colors
+      })
     },
     // prettier-ignore
     changeTriggersCacheUpdate: [
