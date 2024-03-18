@@ -1,7 +1,7 @@
 import { Renderer, TomogramRenderingContext } from './types'
 
 export const createRenderingContext = (canvas: HTMLCanvasElement): TomogramRenderingContext => {
-  const gl = canvas.getContext('webgl2') as WebGL2RenderingContext
+  const gl = canvas.getContext('webgl2', { alpha: false }) as WebGL2RenderingContext
 
   // gl.getExtension('OES_element_index_uint') // WebGL1
 
