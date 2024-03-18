@@ -46,7 +46,7 @@ export const QuadStripRenderer: RendererInitializer = (gl: WebGL2RenderingContex
 
     gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height)
 
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length)
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 2)
   }
 
   let quads: number
