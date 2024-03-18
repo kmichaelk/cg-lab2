@@ -8,19 +8,19 @@ import shaderSourceFragment from './shaders/fragment.glsl'
 
 export const QuadsRenderer: RendererInitializer = (gl: WebGL2RenderingContext): Renderer => {
   const { program, attribs, uniforms, shaders } = createProgram(
-    gl,
-    [
+    gl, {
+    shaders: [
       { type: gl.VERTEX_SHADER, source: shaderSourceVertex },
       { type: gl.FRAGMENT_SHADER, source: shaderSourceFragment }
     ],
-    (gl, program) => ({
-      position: gl.getAttribLocation(program, 'a_position'),
-      color: gl.getAttribLocation(program, 'a_color')
-    }),
-    (gl, program) => ({
-      resolution: gl.getUniformLocation(program, 'u_resolution')!
-    })
-  )
+    attribs: {
+      position: 'a_position',
+      color: 'a_color'
+    },
+    uniforms: {
+      resolution: 'u_resolution'
+    }
+  })
 
   // prettier-ignore
   const buffers = createBuffers(gl, [

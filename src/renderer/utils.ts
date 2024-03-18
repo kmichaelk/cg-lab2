@@ -17,14 +17,16 @@ export const initShader = (gl: WebGLRenderingContext, type: GLenum, source: stri
   return shader
 }
 
-export const createProgram = <A extends Record<string, number>, U extends Record<string, WebGLUniformLocation>>(
+export const createProgram = <A extends string, U extends string>(
   gl: WebGLRenderingContext,
-  shaders: {
-    type: GLenum
-    source: string
-  }[],
-  attribLocationsExtractor: (gl: WebGLRenderingContext, program: WebGLProgram) => A,
-  uniformLocationsExtractor: (gl: WebGLRenderingContext, program: WebGLProgram) => U
+  { shaders, attribs, uniforms }: {
+    shaders: {
+      type: GLenum
+      source: string
+    }[]
+    attribs: Record<A, string>,
+    uniforms: Record<U, string>
+  }
 ) => {
   const program = gl.createProgram()!
   const compiledShaders = shaders.map(({ type, source }) => initShader(gl, type, source))
@@ -38,8 +40,14 @@ export const createProgram = <A extends Record<string, number>, U extends Record
 
   return {
     program,
-    attribs: attribLocationsExtractor(gl, program),
-    uniforms: uniformLocationsExtractor(gl, program),
+    attribs: (Object.keys(attribs) as A[]).reduce((acc, key) =>
+      ((acc[key] = gl.getAttribLocation(program, attribs[key])!), acc),
+      <Record<A, number>>{}
+    ),
+    uniforms: (Object.keys(uniforms) as U[]).reduce((acc, key) =>
+      ((acc[key] = gl.getUniformLocation(program, uniforms[key])!), acc),
+      <Record<U, WebGLUniformLocation>>{}
+    ),
     shaders: compiledShaders
   }
 }

@@ -11,20 +11,20 @@ export const TextureRenderer: RendererInitializer = (gl: WebGL2RenderingContext)
   let transferFunctionWidth: number
 
   const { program, attribs, uniforms, shaders } = createProgram(
-    gl,
-    [
+    gl, {
+    shaders: [
       { type: gl.VERTEX_SHADER, source: shaderSourceVertex },
       { type: gl.FRAGMENT_SHADER, source: shaderSourceFragment }
     ],
-    (gl, program) => ({
-      position: gl.getAttribLocation(program, 'a_position'),
-      texcoord: gl.getAttribLocation(program, 'a_texcoord')
-    }),
-    (gl, program) => ({
-      resolution: gl.getUniformLocation(program, 'u_resolution')!,
-      texture: gl.getUniformLocation(program, 'u_texture')!
-    })
-  )
+    attribs: {
+      position: 'a_position',
+      texcoord: 'a_texcoord'
+    },
+    uniforms: {
+      resolution: 'u_resolution',
+      texture: 'u_texture'
+    }
+  })
 
   // prettier-ignore
   const buffers = createBuffers(gl, [
@@ -41,8 +41,8 @@ export const TextureRenderer: RendererInitializer = (gl: WebGL2RenderingContext)
 
   // prettier-ignore
   const texcoord = new Float32Array([
-    0.0, 0.0,   1.0, 0.0,   0.0, 1.0,
-    0.0, 1.0,   1.0, 0.0,   1.0, 1.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
+    0.0, 1.0, 1.0, 0.0, 1.0, 1.0,
   ])
 
   let textureBuffer: Uint8Array

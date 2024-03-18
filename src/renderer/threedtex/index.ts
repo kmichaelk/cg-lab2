@@ -24,23 +24,23 @@ export const ThreeDTextureRenderer: RendererInitializer = (gl: WebGL2RenderingCo
   let angle = 0
 
   const { program, attribs, uniforms, shaders } = createProgram(
-    gl,
-    [
+    gl, {
+    shaders: [
       { type: gl.VERTEX_SHADER, source: shaderSourceVertex },
       { type: gl.FRAGMENT_SHADER, source: shaderSourceFragment }
     ],
-    (gl, program) => ({
-      position: gl.getAttribLocation(program, 'a_position'),
-      texcoord: gl.getAttribLocation(program, 'a_texcoord')
-    }),
-    (gl, program) => ({
-      resolution: gl.getUniformLocation(program, 'u_resolution')!,
-      texture: gl.getUniformLocation(program, 'u_texture')!,
-      projection: gl.getUniformLocation(program, 'u_projection')!,
-      model: gl.getUniformLocation(program, 'u_model')!,
-      texProjection: gl.getUniformLocation(program, 'u_texProjection')!
-    })
-  )
+    attribs: {
+      position: 'a_position',
+      texcoord: 'a_texcoord'
+    },
+    uniforms: {
+      resolution: 'u_resolution',
+      texture: 'u_texture',
+      projection: 'u_projection',
+      model: 'u_model',
+      texProjection: 'u_texProjection'
+    }
+  })
 
   // prettier-ignore
   const buffers = createBuffers(gl, [
